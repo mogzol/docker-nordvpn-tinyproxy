@@ -13,8 +13,14 @@ do_fatal() {
   printf '[%b] %s\n' "\033[91mFATAL\033[0m" "${@}"
   exit 100
 }
+do_error() {
+    printf '[%b] %s\n' "\033[91mERROR\033[0m" "${@}"
+}
 do_warn() {
   printf '[%b] %s\n' "\033[93mWARN \033[0m" "${@}"
+}
+do_info() {
+    printf '[%b] %s\n' "\033[94mINFO \033[0m" "${@}"
 }
 do_pass() {
   printf '[%b] %s\n' "\033[92m OK  \033[0m" "${@}"
