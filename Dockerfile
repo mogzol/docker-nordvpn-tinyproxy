@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --no-cache openvpn tinyproxy iputils bind-tools curl bash jq && \
+RUN apk add --no-cache openvpn tinyproxy iputils bind-tools curl bash jq sudo && \
     cd /etc/openvpn && \
     curl --location --silent --fail https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip -o /tmp/ovpn.zip && \
     unzip /tmp/ovpn.zip && \

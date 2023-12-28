@@ -87,7 +87,7 @@ startOvpn() {
     do_fatal "Unable to create TAP adapter"
   fi
 
-  openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
+  sudo openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
 }
 
