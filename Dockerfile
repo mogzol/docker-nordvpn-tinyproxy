@@ -11,4 +11,3 @@ WORKDIR /
 COPY scripts/ /usr/local/bin/
 
 ENTRYPOINT ["/bin/sh", "-c", "/usr/local/bin/healthcheck.sh -s; /usr/local/bin/startup.sh" ]
-CMD [ "" ]
