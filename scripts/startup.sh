@@ -7,6 +7,7 @@ trap "exit" TERM
 
 PORT=${PORT:-8888}
 OPENVPN_CREDS=${OPENVON_CREDS:-"./openvpn.pass"}
+VPN_TYPE=${VPN_TYPE:-udp}
 TINYPROXY_CONF=${TINYPROXY_CONF:="/etc/tinyproxy/tinyproxy.conf"}
 
 do_fatal() {
@@ -77,6 +78,7 @@ configRoutes() {
 }
 
 startOvpn() {
+  do_info "Openvpn config file: /etc/openvpn/ovpn_${VPN_TYPE}/${SERVER}.${VPN_TYPE}.ovpn"
   openvpn --config "/etc/openvpn/ovpn_${VPN_TYPE}/${SERVER}.${VPN_TYPE}.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
 }
