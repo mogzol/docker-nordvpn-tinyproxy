@@ -3,7 +3,7 @@
 # SC2236 is a stylistic issue that does not affect correctness and is invalid for inverting a variable check "! -z ${VAR+x}"
 
 # Allow this script to exit when recieving SIGTERM, so that if either of the sub-processes die, the docker container will stop
-trap "do_fatal \"Main process terminated\"" TERM
+trap "exit" TERM
 
 PORT=${PORT:-8888}
 OPENVPN_CREDS=${OPENVON_CREDS:-"./openvpn.pass"}
@@ -28,8 +28,8 @@ do_pass() {
 
 checkVars() {
   for name in USERNAME PASSWORD; do
-    if [ -z "$(eval printf '%s' "$name")" ]; then
-      do_fatal "Variable $$name not set!"
+    if [ -z "$(eval printf \'%s\' "\$$name")" ]; then
+      do_fatal "Variable ${name} not set!"
     fi
   done
 }
@@ -69,25 +69,21 @@ configRoutes() {
     do_fatal "Unable to configure routing table (1 of 3)"
   fi
   if ! ip rule add iif lo ipproto tcp sport "${PORT}" lookup "${PORT}"; then
-      do_fatal "Unable to configure routing table (2 of 3)"
+    do_fatal "Unable to configure routing table (2 of 3)"
   fi
   if ! ip rule add iif eth0 ipproto tcp dport "${PORT}" lookup "${PORT}"; then
-      do_fatal "Unable to configure routing table (3 of 3)"
+    do_fatal "Unable to configure routing table (3 of 3)"
   fi
 }
 
 startOvpn() {
-  if ! openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"; then
-    do_fatal "Unable to start openvpn"
-  fi
-  do_pass "Openvpn started"
+  openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
+  kill $$
 }
 
 startProxy() {
-  if ! tinyproxy -d; then
-    do_fatal "Unable to start tinyproxy"
-  fi
-  do_pass "Tinyproxy started"
+  tinyproxy -d
+  kill $$
 
   configRoutes
 }
@@ -159,11 +155,10 @@ while [ ${#} -gt 0 ]; do
     esac
 done
 
+checkVars
 if [ -z ${SERVER+x} ]; then
   getRandomServer
 fi
-
-checkVars
 configOvpn
 configProxy
 startOvpn & startProxy &

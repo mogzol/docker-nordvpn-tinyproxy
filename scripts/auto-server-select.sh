@@ -83,5 +83,3 @@ done
 if [ -z ${SERVER+x} ]; then
   do_error "Unable to get random server"
 fi
-
-do_pass "Random server selected: ${SERVER}"
