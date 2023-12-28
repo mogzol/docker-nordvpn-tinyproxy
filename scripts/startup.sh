@@ -77,6 +77,16 @@ configRoutes() {
 }
 
 startOvpn() {
+  do_info 'Creating Directory: /dev/net\n'
+  if ! mkdir -p /dev/net; then
+    do_fatal "Unable to create directory: /dev/net"
+  fi
+
+  do_info 'Creating TUN Adapter: /dev/net/tun\n'
+  if ! mknod /dev/net/tun c 10 200; then
+    do_fatal "Unable to create TAP adapter"
+  fi
+
   openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
 }
@@ -129,6 +139,20 @@ while [ ${#} -gt 0 ]; do
         TINYPROXY_CONF="${2}"
       else
         do_warn "Unable to use provided tinyproxy config file, using default: ${TINYPROXY_CONF}"
+      fi
+      shift; shift;;
+    --nord-username)
+      if [ ! -z ${2+x} ]; then
+        USERNAME="${2}"
+      else
+        do_warn "Unable to use provided tinyproxy username, using environment variable"
+      fi
+      shift; shift;;
+    --nord-password)
+      if [ ! -z ${2+x} ]; then
+        PASSWORD="${2}"
+      else
+        do_warn "Unable to use provided tinyproxy username, using environment variable"
       fi
       shift; shift;;
     --proxy-username)
