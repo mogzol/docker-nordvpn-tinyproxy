@@ -77,7 +77,7 @@ configRoutes() {
 }
 
 startOvpn() {
-  openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
+  openvpn --config "/etc/openvpn/ovpn_${VPN_TYPE}/${SERVER}.${VPN_TYPE}.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
 }
 

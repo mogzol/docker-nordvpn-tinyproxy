@@ -73,6 +73,13 @@ while [ "${LIMIT}" -le 10 ]; do
   # get nordvpn server
   if SERVER=$(curl --fail --location --silent "${URL}" | jq --raw-output "${JQ_SELECTOR}"); then
     printf 'NORDVPN_SERVER="%s"\n' "${SERVER}" > /tmp/auto-selected-server
+
+    if [ "${VPN_TYPE}" = 3 ]; then
+      printf 'VPN_TYPE="%s"\n' "udp" >> /tmp/auto-selected-server
+    else
+      printf 'VON_TYPE="%s"\n' "tcp" >> /tmp/auto-selected-server
+    fi
+    
     do_info "Random server written to: /tmp/auto-selected-server"
     break
   else
