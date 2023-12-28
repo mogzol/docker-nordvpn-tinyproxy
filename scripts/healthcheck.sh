@@ -26,24 +26,24 @@ getPublicIP() {
 
   # curl lookups
   for i in "https://icanhazip.com" "https://ifconfig.me" "https://api.ipify.org" "https://bot.whatismyipaddress.com" "https://ipinfo.io/ip" "https://ipecho.net/plain"; do
-    if ip=$(curl --fail --silent "${i}") && [ ! -z ${ip+x} ]; then
+    if ip=$(curl --fail --silent "${i}") && [ ! -z ${ip+x} ] && [ "${ip}" != "" ]; then
       printf '%s' "${ip}"
       return 0
     fi
   done
 
   # DNS Lookups
-  if ip=$(dig -4 @ns1.google.com TXT o-o.myaddr.l.google.com +short | sed -e 's/"//g') && [ ! -z ${ip+x} ]; then
+  if ip=$(dig -4 @ns1.google.com TXT o-o.myaddr.l.google.com +short | sed -e 's/"//g') && [ ! -z ${ip+x} ] && [ "${ip}" != "" ]; then
     printf '%s' "${ip}"
     return 0
   fi
 
-  if ip=$(dig -4 @resolver1.opendns.com A myip.opendns.com +short | sed -e 's/"//g') && [ ! -z ${ip+x} ]; then
+  if ip=$(dig -4 @resolver1.opendns.com A myip.opendns.com +short | sed -e 's/"//g') && [ ! -z ${ip+x} ] && [ "${ip}" != "" ]; then
     printf '%s' "${ip}"
     return 0
   fi
 
-  if ip=$(dig -4 @1.0.0.1 txt ch whoami.cloudflare +short | sed -e 's/"//g') && [ ! -z ${ip+x} ]; then
+  if ip=$(dig -4 @1.0.0.1 txt ch whoami.cloudflare +short | sed -e 's/"//g') && [ ! -z ${ip+x} ] && [ "${ip}" != "" ]; then
     printf '%s' "${ip}"
     return 0
   fi
@@ -67,7 +67,7 @@ if DIP=$(getPublicIP); then
   do_fatal "Unable to detect real-world IP."
 fi
 # Make sure there is data in the variable
-if [ -z ${DIP+x} ]; then
+if [ ! -z ${DIP+x} ] && [ "${DIP}" != "" ]; then
   do_fatal "Unable to detect real-world IP."
 fi
 

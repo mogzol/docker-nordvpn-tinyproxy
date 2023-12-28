@@ -118,49 +118,49 @@ while [ ${#} -gt 0 ]; do
       fi
       shift; shift;;
     -o|--ovpn-config)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         OPENVPN_CREDS="${2}"
       else
         do_warn "Unable to use provided openvpn config file, using default: ${OPENVPN_CREDS}"
       fi
       shift; shift;;
     -t|--tproxy-config)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         TINYPROXY_CONF="${2}"
       else
         do_warn "Unable to use provided tinyproxy config file, using default: ${TINYPROXY_CONF}"
       fi
       shift; shift;;
     --nord-username)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         USERNAME="${2}"
       else
         do_warn "Unable to use provided tinyproxy username, using environment variable"
       fi
       shift; shift;;
     --nord-password)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         PASSWORD="${2}"
       else
         do_warn "Unable to use provided tinyproxy username, using environment variable"
       fi
       shift; shift;;
     --proxy-username)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         PROXY_USERNAME="${2}"
       else
         do_warn "Unable to use provided tinyproxy username, using environment variable"
       fi
       shift; shift;;
     --proxy-password)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         PROXY_PASSWORD="${2}"
       else
         do_warn "Unable to use provided tinyproxy password, using environment variable"
       fi
       shift; shift;;
     -s|--server)
-      if [ ! -z ${2+x} ]; then
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
         SERVER="${2}"
       else
         do_warn "Unable to use provided server, using auto-selected server"
