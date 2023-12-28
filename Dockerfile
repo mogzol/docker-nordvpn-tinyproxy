@@ -10,4 +10,4 @@ WORKDIR /
 
 COPY scripts/ /usr/local/bin/
 
-ENTRYPOINT ["/usr/bin/sh", "-c", "/usr/local/bin/healthcheck.sh -s; /usr/local/bin/startup.sh ${@}" ]
+ENTRYPOINT ["/usr/sh", "-c", "/usr/local/bin/healthcheck.sh -s; /usr/local/bin/startup.sh ${@}" ]
