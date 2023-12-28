@@ -77,17 +77,7 @@ configRoutes() {
 }
 
 startOvpn() {
-  do_info 'Creating Directory: /dev/net\n'
-  if ! mkdir -p /dev/net; then
-    do_fatal "Unable to create directory: /dev/net"
-  fi
-
-  do_info 'Creating TUN Adapter: /dev/net/tun\n'
-  if ! mknod /dev/net/tun c 10 200; then
-    do_fatal "Unable to create TAP adapter"
-  fi
-
-  sudo openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
+  openvpn --config "/etc/openvpn/ovpn_udp/${SERVER}.udp.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
 }
 

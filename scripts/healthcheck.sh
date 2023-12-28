@@ -63,9 +63,12 @@ while [ ${#} -gt 0 ]; do
 done
 
 # get current external IP
-if DIP=$(getPublicIP) && [ -z ${DIP+x} ]; then
+if DIP=$(getPublicIP); then
   do_fatal "Unable to detect real-world IP."
-  exit 100
+fi
+# Make sure there is data in the variable
+if [ -z ${DIP+x} ]; then
+  do_fatal "Unable to detect real-world IP."
 fi
 
 if [ ${STORE_REMOTE_IP} = "true" ]; then
