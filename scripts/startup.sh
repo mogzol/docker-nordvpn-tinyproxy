@@ -9,6 +9,7 @@ PORT=${PORT:-8888}
 OPENVPN_CREDS=${OPENVON_CREDS:-"./openvpn.pass"}
 VPN_TYPE=${VPN_TYPE:-udp}
 TINYPROXY_CONF=${TINYPROXY_CONF:="/etc/tinyproxy/tinyproxy.conf"}
+SRC_NET=${SRC_NET:="192.168.0.0/16"}
 
 do_fatal() {
   printf '[%b] %s\n' "\033[91mFATAL\033[0m" "${@}"
@@ -67,14 +68,18 @@ configRoutes() {
   # Allow tinyproxy traffic to bypass the VPN
   DEFAULT_ROUTE_RULE="$(ip route | grep default)"
   if ! ip route add "${DEFAULT_ROUTE_RULE}" table "${PORT}"; then
-    do_fatal "Unable to configure routing table (1 of 3)"
+    do_fatal "Unable to configure routing table (1 of 4)"
   fi
   if ! ip rule add iif lo ipproto tcp sport "${PORT}" lookup "${PORT}"; then
-    do_fatal "Unable to configure routing table (2 of 3)"
+    do_fatal "Unable to configure routing table (2 of 4)"
   fi
   if ! ip rule add iif eth0 ipproto tcp dport "${PORT}" lookup "${PORT}"; then
-    do_fatal "Unable to configure routing table (3 of 3)"
+    do_fatal "Unable to configure routing table (3 of 4)"
   fi
+  if ! ip route add "${SRC_NET}" via "$(printf '%s' "${DEFAULT_ROUTE_RULE}" | awk '{print $3}')" dev eth0; then
+    do_fatal "Unable to configure routing table (4 of 4)"
+  fi
+  do_info "Network routes configured"
 }
 
 startOvpn() {
@@ -173,6 +178,13 @@ while [ ${#} -gt 0 ]; do
         SERVER="${2}"
       else
         do_warn "Unable to use provided server, using auto-selected server"
+      fi
+      shift; shift;;
+    -l|--local-net)
+      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
+        SRC_NET="${2}"
+      else
+        do_warn "Unable to use provided local network, using default"
       fi
       shift; shift;;
     esac
