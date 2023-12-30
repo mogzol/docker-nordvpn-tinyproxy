@@ -78,6 +78,9 @@ configRoutes() {
 }
 
 startOvpn() {
+  if [ ! -d /dev/net ]; then
+    mkdir -p /dev/net
+  fi
   if ! file /dev/net/tun | grep 'character special'; then
     mknod /dev/net/tun c 10 200
   fi
