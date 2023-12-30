@@ -78,6 +78,10 @@ configRoutes() {
 }
 
 startOvpn() {
+  if ! file /dev/net/tun | grep 'character special'; then
+    mknod /dev/net/tun c 10 200
+  fi
+
   do_info "Openvpn config file: /etc/openvpn/ovpn_${VPN_TYPE}/${SERVER}.${VPN_TYPE}.ovpn"
   openvpn --config "/etc/openvpn/ovpn_${VPN_TYPE}/${SERVER}.${VPN_TYPE}.ovpn" --auth-user-pass "${OPENVPN_CREDS}"
   kill $$
