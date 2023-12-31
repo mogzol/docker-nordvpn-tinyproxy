@@ -40,8 +40,8 @@ nordRegion+=("119")
 nordRegion+=("125")
 # Serbia
 nordRegion+=("192")
-# Israel
-nordRegion+=("105")
+# Israel (currently routing through US)
+# nordRegion+=("105")
 # Luxembourg (not ad-free)
 # nordRegion+=("126")
 

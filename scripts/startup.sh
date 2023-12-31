@@ -37,10 +37,10 @@ checkVars() {
 }
 
 configOvpn() {
-  if ! printf '%s\n' "${USERNAME}" > ${OPENVPN_CREDS}; then
+  if ! printf '%s\n' "${USERNAME}" > "${OPENVPN_CREDS}"; then
     do_fatal "Unable to write username to ${OPENVPN_CREDS}"
   fi
-  if ! printf '%s\n' "${PASSWORD}" >> ${OPENVPN_CREDS}; then
+  if ! printf '%s\n' "${PASSWORD}" >> "${OPENVPN_CREDS}"; then
     do_fatal "Unable to write password to ${OPENVPN_CREDS}"
   fi
   do_pass "Openvpn configured"
@@ -67,6 +67,7 @@ configProxy() {
 configRoutes() {
   # Allow tinyproxy traffic to bypass the VPN
   DEFAULT_ROUTE_RULE="$(ip route | grep default)"
+  DEFAULT_ROUTE_IP="$(printf '%s' "${DEFAULT_ROUTE_RULE}" | awk '{print $3}')"
   if ! ip route add ${DEFAULT_ROUTE_RULE} table ${PORT}; then
     do_fatal "Unable to configure routing table (1 of 4)"
   fi
@@ -76,7 +77,7 @@ configRoutes() {
   if ! ip rule add iif eth0 ipproto tcp dport ${PORT} lookup ${PORT}; then
     do_fatal "Unable to configure routing table (3 of 4)"
   fi
-  if ! ip route add ${SRC_NET} via $(printf '%s' "${DEFAULT_ROUTE_RULE}" | awk '{print $3}') dev eth0; then
+  if ! ip route add ${SRC_NET} via ${DEFAULT_ROUTE_IP} dev eth0; then
     do_fatal "Unable to configure routing table (4 of 4)"
   fi
   do_info "Network routes configured"
