@@ -98,8 +98,6 @@ startOvpn() {
 startProxy() {
   tinyproxy -d
   kill $$
-
-  configRoutes
 }
 
 getRandomServer() {
@@ -196,5 +194,6 @@ if [ -z ${SERVER+x} ]; then
 fi
 configOvpn
 configProxy
+configRoutes
 startOvpn & startProxy &
 wait
