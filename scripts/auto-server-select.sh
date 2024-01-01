@@ -21,6 +21,8 @@ do_pass() {
 
 SERVER=""
 
+### \/ \/ \/ Region Selection \/ \/ \/
+
 nordRegion=()
 # Ukraine
 nordRegion+=("225")
@@ -40,10 +42,12 @@ nordRegion+=("119")
 nordRegion+=("125")
 # Serbia
 nordRegion+=("192")
-# Israel (currently routing through US)
+# Israel (currently routing through US??)
 # nordRegion+=("105")
 # Luxembourg (not ad-free)
 # nordRegion+=("126")
+
+### /\ /\ /\ Region Selection /\ /\ /\
 
 vpnType=()
 # UDP

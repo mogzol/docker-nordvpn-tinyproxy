@@ -23,7 +23,8 @@ Note that the `--cap-add`, and `--device` options are required for the image to 
 
 The `USERNAME` and `PASSWORD` environment variables should be your NordVPN service credentials, not your regular username and password. See here for how to get those: https://support.nordvpn.com/General-info/1653315162/Changes-to-the-login-process-on-third-party-apps-and-routers.htm
 
-The `SERVER` environment variable should be whatever NordVPN server you want to connect to (for example `us5086.nordvpn.com`). You can use this page to find one: https://nordvpn.com/servers/tools/
+The `SERVER` environment, if defined, variable should be whatever NordVPN server you want to connect to (for example `us5086.nordvpn.com`). You can use this page to find one: https://nordvpn.com/servers/tools/
+If you don't define a `SERVER` environment variable a randomly selected server will be selected for you from the regions listed [here](./scripts/auto-server-select.sh).
 
 If the VPN connection ever dies, the container will stop, so it is recommended to use the `--restart` option to have it automatically restart.
 
@@ -33,7 +34,11 @@ If the VPN connection ever dies, the container will stop, so it is recommended t
 | ---------------- | -------------------------------------------------------------------------------------------------- |
 | `USERNAME`       | Your NordVPN service credentials username. **(required)**                                          |
 | `PASSWORD`       | Your NordVPN service credentials password. **(required)**                                          |
-| `SERVER`         | The NordVPN server to connect to. **(required)**                                                   |
+| `SERVER`         | The NordVPN server to connect to. (optional, default is randomly selected)                         |
+| `SRC_NET`        | The CIDR for the network that will access tinyproxy. (**required**, default `192.168.0.0/16`)      |
 | `PORT`           | The port within the container to run the HTTP proxy on. (optional, default `8888`)                 |
 | `PROXY_USERNAME` | The username to use for the HTTP proxy. (optional, if unset the proxy will not use authentication) |
 | `PROXY_PASSWORD` | The password to use for the HTTP proxy. (optional, if unset the proxy will not use authentication) |
+| `OPENVPN_CREDS`  | The openvpn credential file location. (optional, default `./openvpn.pass`)                         |
+| `VPN_TYPE`       | The openvpn protocol (optional, either `udp` or `tcp`, default `udp`)                              |
+| `TINYPROXY_CONF` | The tinyproxy configuration file location. (optional, default `/etc/tinyproxy/tinyproxy.conf`)     |
