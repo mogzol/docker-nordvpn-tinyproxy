@@ -2,9 +2,6 @@
 # shellcheck disable=SC2236
 # SC2236 is a stylistic issue that does not affect correctness and is invalid for inverting a variable check "! -z ${VAR+x}"
 
-# Allow this script to exit when recieving SIGTERM, so that if either of the sub-processes die, the docker container will stop
-trap "exit" TERM
-
 PORT=${PORT:-8888}
 OPENVPN_CREDS=${OPENVON_CREDS:-"./openvpn.pass"}
 VPN_TYPE=${VPN_TYPE:-udp}
@@ -13,16 +10,16 @@ SRC_NET=${SRC_NET:="192.168.0.0/16"}
 
 do_fatal() {
   printf '[%b] %s\n' "\033[91mFATAL\033[0m" "${@}"
-  exit 100
+  cleanup 1
 }
 do_error() {
-    printf '[%b] %s\n' "\033[91mERROR\033[0m" "${@}"
+  printf '[%b] %s\n' "\033[91mERROR\033[0m" "${@}"
 }
 do_warn() {
   printf '[%b] %s\n' "\033[93mWARN \033[0m" "${@}"
 }
 do_info() {
-    printf '[%b] %s\n' "\033[94mINFO \033[0m" "${@}"
+  printf '[%b] %s\n' "\033[94mINFO \033[0m" "${@}"
 }
 do_pass() {
   printf '[%b] %s\n' "\033[92m OK  \033[0m" "${@}"
@@ -34,6 +31,10 @@ checkVars() {
       do_fatal "Variable ${name} not set!"
     fi
   done
+}
+
+cleanup() {
+  exit ${1:-0}
 }
 
 configOvpn() {
@@ -118,76 +119,25 @@ getRandomServer() {
   do_info "Server selected: ${SERVER}"
 }
 
-while [ ${#} -gt 0 ]; do
+handleSig() {
   case "${1}" in
-    -D|--debug)
-      set -x
-      shift;;
-    -p|--port)
-      if printf '%s' "${2}" | grep -E -q '^\d+$'; then
-        PORT="${2}"
-      else
-        do_warn "Port is not numeric, using default: $PORT"
-      fi
-      shift; shift;;
-    -o|--ovpn-config)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        OPENVPN_CREDS="${2}"
-      else
-        do_warn "Unable to use provided openvpn config file, using default: ${OPENVPN_CREDS}"
-      fi
-      shift; shift;;
-    -t|--tproxy-config)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        TINYPROXY_CONF="${2}"
-      else
-        do_warn "Unable to use provided tinyproxy config file, using default: ${TINYPROXY_CONF}"
-      fi
-      shift; shift;;
-    --nord-username)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        USERNAME="${2}"
-      else
-        do_warn "Unable to use provided tinyproxy username, using environment variable"
-      fi
-      shift; shift;;
-    --nord-password)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        PASSWORD="${2}"
-      else
-        do_warn "Unable to use provided tinyproxy username, using environment variable"
-      fi
-      shift; shift;;
-    --proxy-username)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        PROXY_USERNAME="${2}"
-      else
-        do_warn "Unable to use provided tinyproxy username, using environment variable"
-      fi
-      shift; shift;;
-    --proxy-password)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        PROXY_PASSWORD="${2}"
-      else
-        do_warn "Unable to use provided tinyproxy password, using environment variable"
-      fi
-      shift; shift;;
-    -s|--server)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        SERVER="${2}"
-      else
-        do_warn "Unable to use provided server, using auto-selected server"
-      fi
-      shift; shift;;
-    -l|--local-net)
-      if [ ! -z ${2+x} ] && [ "${2}" != "" ]; then
-        SRC_NET="${2}"
-      else
-        do_warn "Unable to use provided local network, using default"
-      fi
-      shift; shift;;
-    esac
-done
+    SIGTERM|TERM|SIGINT|INT|SIGHUP|HUP)
+      do_warn "Signel received: ${1}"
+      cleanup 1
+      ;;
+    *)
+      ;;
+  esac
+}
+
+_trap() {
+  for sig in "${@}"; do
+    trap 'handleSig ${sig}' "${sig}"
+  done
+}
+
+# Allow this script to exit when recieving SIGTERM, so that if either of the sub-processes die, the docker container will stop
+_trap SIGTERM TERM SIGINT INT SIGHUP HUP
 
 checkVars
 if [ -z ${SERVER+x} ]; then
